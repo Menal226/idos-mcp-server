@@ -1,0 +1,69 @@
+{
+    "name": "idos-mcp-server",
+    "version": "1.0.0",
+    "description": "Read-only MCP server for IDOS.cz: Czech train, bus and city transport connections, departure boards and timetables",
+    "mcpName": "io.github.Menal226/idos-mcp-server",
+    "keywords": [
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "idos",
+        "jizdni-rady",
+        "czech",
+        "public-transport",
+        "timetable",
+        "trains",
+        "claude"
+    ],
+    "homepage": "https://github.com/Menal226/idos-mcp-server#readme",
+    "bugs": {
+        "url": "https://github.com/Menal226/idos-mcp-server/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Menal226/idos-mcp-server.git"
+    },
+    "author": "Menal",
+    "license": "Apache-2.0",
+    "type": "module",
+    "bin": {
+        "idos-mcp-server": "build/index.js"
+    },
+    "files": [
+        "build"
+    ],
+    "engines": {
+        "node": ">=20.3"
+    },
+    "scripts": {
+        "dev": "tsx src/index.ts",
+        "build": "tsc",
+        "start": "node build/index.js",
+        "inspect": "npx @modelcontextprotocol/inspector node build/index.js",
+        "smoke": "tsx scripts/smoke.ts",
+        "test": "vitest run",
+        "format": "prettier --write \"src/**/*.ts\" \"scripts/**/*.ts\" \"test/**/*.ts\" *.json",
+        "format:check": "prettier --check \"src/**/*.ts\" \"scripts/**/*.ts\" \"test/**/*.ts\" *.json",
+        "bundle": "tsx scripts/bundle.ts",
+        "prepublishOnly": "npm run build && npm test"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/server": "^2.4.0",
+        "cheerio": "^1.2.0",
+        "zod": "^4.2.0"
+    },
+    "devDependencies": {
+        "@modelcontextprotocol/client": "^2.4.0",
+        "@types/node": "^24.0.0",
+        "prettier": "^3.9.10",
+        "tsx": "^4.19.2",
+        "typescript": "^5.9.3",
+        "vitest": "^5.1.0"
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "printWidth": 140,
+        "arrowParens": "avoid",
+        "trailingComma": "none"
+    }
+}

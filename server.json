@@ -1,0 +1,22 @@
+{
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.Menal226/idos-mcp-server",
+    "title": "IDOS",
+    "description": "Read-only Czech public transport: connections, departure boards, train routes and city timetables from IDOS.cz.",
+    "repository": {
+        "url": "https://github.com/Menal226/idos-mcp-server",
+        "source": "github"
+    },
+    "websiteUrl": "https://github.com/Menal226/idos-mcp-server#readme",
+    "version": "1.0.0",
+    "packages": [
+        {
+            "registryType": "npm",
+            "identifier": "idos-mcp-server",
+            "version": "1.0.0",
+            "transport": {
+                "type": "stdio"
+            }
+        }
+    ]
+}

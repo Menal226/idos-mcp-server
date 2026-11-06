@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Evaluation for the read-only IDOS MCP server (idos.cz, Czech public transport timetables).
+  All questions pin explicit dates in the 2025/2026 timetable period (Wed 25.11.2026 / Thu 26.11.2026),
+  ask only for scheduled (not live) data, and were verified twice against idos.cz on 2026-11-06.
+  Trains with temporary-only operation remarks ("jede od ... do ...") were deliberately avoided.
+  Times are written as IDOS prints them: H:MM, 24-hour, no leading zero.
+-->
+<evaluation>
+  <!-- Connections. Verified: idos_search_connections(from="Plzeň hl.n.", to="České Budějovice", date=2026-11-26, time=10:00, timetable=vlaky)
+       -> 10:04 R 629 Rožmberk, direct; idos_get_connection_detail -> stops Nepomuk, Horažďovice předm., Strakonice, Protivín, Číčenice;
+       cross-checked with idos_get_train_route(train="R 629", station="Plzeň hl.n."). Train "nejede 24.,25.XI." - 26.XI is unaffected. -->
+  <qa_pair>
+    <question>On Thursday 26 November 2026 you want to go by train from Plzeň hl.n. to České Budějovice, leaving Plzeň at 10:00 or later. Take the first connection IDOS offers (it is a direct train). At how many intermediate stations does that train stop between Plzeň hl.n. and České Budějovice (excluding both of them)? Answer with a number only.</question>
+    <answer>5</answer>
+  </qa_pair>
+
+  <!-- Connections. Verified: idos_search_connections(from="Olomouc hl.n."/"Olomouc", to="Jeseník", date=2026-11-26, time=08:00) -> 8:56 R 903 Bouzov /1403, direct;
+       idos_get_connection_detail -> "direct · 112 km" (per-stop km in the leg are counted from Brno: Olomouc 100 km, Jeseník 212 km). -->
+  <qa_pair>
+    <question>On Thursday 26 November 2026 you travel from Olomouc hl.n. to Jeseník on the first train connection departing Olomouc at 08:00 or later. According to IDOS, how many kilometres long is your journey from Olomouc hl.n. to Jeseník? Answer with a whole number of kilometres only.</question>
+    <answer>112</answer>
+  </qa_pair>
+
+  <!-- Departures + trip route. Verified: idos_get_departures(station="Praha hl.n.", date=2026-11-25, time=07:00, destination="Klatovy")
+       -> 07:05 R16 (R 774 Berounka) -> Klatovy; idos_get_trip_route(trip_id) -> Přeštice arr 9:05 dep 9:06, Klatovy arr 9:29. -->
+  <qa_pair>
+    <question>On Wednesday 25 November 2026, take the first direct train from Praha hl.n. to Klatovy departing at 07:00 or later. At what time is it scheduled to arrive in Přeštice? Answer in H:MM 24-hour format (e.g. 9:41).</question>
+    <answer>9:05</answer>
+  </qa_pair>
+
+  <!-- Departures + trip route. Verified: idos_get_departures(station="Ostrava hl.n.", date=2026-11-26, time=08:00, line="LE" and line="Leo Express")
+       -> 08:06 LE 412 Leo Express -> Praha hl.n.; idos_get_trip_route(trip_id) -> Praha hl.n. arr 11:43 (no date-restriction remarks). -->
+  <qa_pair>
+    <question>On Thursday 26 November 2026, what is the scheduled arrival time in Praha hl.n. of the first Leo Express train that departs from Ostrava hl.n. at 08:00 or later towards Prague? Answer in H:MM 24-hour format (e.g. 9:41).</question>
+    <answer>11:43</answer>
+  </qa_pair>
+
+  <!-- Train route by number/name. Verified: idos_get_train_route(train="R 321" / train="Silva Nortica", station="Praha hl.n.", date=2026-11-25)
+       -> departs 7:46, Tábor 99 km, terminus Wien Franz-Josefs-Bahnhof 349 km; 349 - 99 = 250. Remark "nejede 12.XI." only. -->
+  <qa_pair>
+    <question>The fast train R 321 "Silva Nortica" leaves Praha hl.n. on the morning of Wednesday 25 November 2026. How many kilometres does it travel between Tábor and its final station, according to the distances IDOS lists for its route? Answer with a whole number of kilometres only.</question>
+    <answer>250</answer>
+  </qa_pair>
+
+  <!-- City lines (ZJŘ). Verified: idos_search_lines(city="Brno", query="1"); idos_get_line_route(city="Brno", line="1", direction="Ečerova", date=2026-11-25)
+       -> zones 101 (Řečkovice..Husitská), 100 (Jungmannova..Stránského), 101 again from Vozovna Komín;
+       idos_get_stop_timetable(city="Brno", line="1", stop="Stránského", direction="Ečerova", date=2026-11-25) -> first departure 4:45. -->
+  <qa_pair>
+    <question>Brno tram line 1 runs from Řečkovice to Ečerova, starting in tariff zone 101, passing through zone 100 in the centre, and returning to zone 101 before Ečerova. Identify the last stop in zone 100 before the tram re-enters zone 101 on its way to Ečerova. At what time does the first tram 1 towards Ečerova depart from that stop on Wednesday 25 November 2026? Answer in H:MM 24-hour format (e.g. 9:41).</question>
+    <answer>4:45</answer>
+  </qa_pair>
+
+  <!-- City lines (ZJŘ). Verified: idos_search_lines(city="Praha", query="22"); idos_get_stop_timetable(city="Praha", line="22", stop="Malostranské náměstí",
+       direction="Bílá Hora", date=2026-11-25) -> hour 12: "00A 05 10A ..."; note A = only to Vypich, B = only to Pražský hrad, so 12:05 is the first full trip.
+       Cross-checked with the Újezd timetable (12:02 without A/B, +3 min to Malostranské náměstí). -->
+  <qa_pair>
+    <question>In Prague, tram line 22 towards Bílá Hora has some trips that end early (at Vypich or at Pražský hrad). On Wednesday 25 November 2026, what is the scheduled departure time from the stop Malostranské náměstí of the first tram 22 at or after 12:00 that runs all the way to Bílá Hora? Answer in H:MM 24-hour format (e.g. 9:41).</question>
+    <answer>12:05</answer>
+  </qa_pair>
+
+  <!-- City lines (ZJŘ). Verified: idos_search_lines(city="Plzeň", query="4") -> Košutka -> Univerzita;
+       idos_get_line_route(city="Plzeň", line="4", direction="Univerzita", date=2026-11-26) -> Zoologická zahrada 7 min, Univerzita 25 min;
+       idos_get_stop_timetable(city="Plzeň", line="4", stop="Zoologická zahrada", direction="Univerzita", date=2026-11-26) -> "Univerzita 18 min". -->
+  <qa_pair>
+    <question>On Thursday 26 November 2026 you board Plzeň tram line 4 at the stop Zoologická zahrada and ride to the terminus Univerzita. According to the posted timetable, how many minutes is the scheduled ride? Answer with a number of minutes only.</question>
+    <answer>18</answer>
+  </qa_pair>
+
+  <!-- Combined: train route + city line timetable. Verified: idos_get_train_route(train="rj 275" / train="Metropolitan", station="Praha hl.n.", date=2026-11-25)
+       -> dep 7:37, Brno hl.n. arr 10:13; idos_get_stop_timetable(city="Brno", line="1", stop="Hlavní nádraží", direction="Ečerova", date=2026-11-25)
+       -> hour 10: 03 09 16 23 ... -> first after 10:13 is 10:16. -->
+  <qa_pair>
+    <question>On Wednesday 25 November 2026 you ride the railjet rj 275 "Metropolitan" from Praha hl.n. to Brno hl.n. In Brno you continue on tram line 1 from the stop Hlavní nádraží towards Ečerova. According to the posted tram timetable, at what time does the first tram 1 towards Ečerova leave Hlavní nádraží after the train's scheduled arrival in Brno hl.n.? Answer in H:MM 24-hour format (e.g. 9:41).</question>
+    <answer>10:16</answer>
+  </qa_pair>
+
+  <!-- Combined: connections + connection detail (full route) / train route. Verified: idos_search_connections(from="Praha hl.n.", to="Český Krumlov",
+       date=2026-11-26, time=08:00, timetable=vlaky) -> #1 8:21 IC 531 to České Budějovice, then S4 (Os 8105) 10:12 -> Český Krumlov 10:57;
+       idos_get_connection_detail(include_full_route=true) and idos_get_train_route(train="Os 8105", station="České Budějovice", time=10:12)
+       -> terminus Nové Údolí at 96 km from České Budějovice. -->
+  <qa_pair>
+    <question>On Thursday 26 November 2026 you take the first train-only connection from Praha hl.n. to Český Krumlov that departs at 08:00 or later; it has one change, in České Budějovice. The train you change to does not end in Český Krumlov. How many kilometres is that train's complete run from České Budějovice to its final station? Answer with a whole number of kilometres only.</question>
+    <answer>96</answer>
+  </qa_pair>
+</evaluation>

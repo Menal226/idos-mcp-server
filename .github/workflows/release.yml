@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - run: npm install -g npm@latest
+
+      - name: Check the tag matches package.json
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME doesn't match package.json version $version"
+            exit 1
+          fi
+
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - run: npm run smoke
+      - run: npm run bundle
+
+      - name: Attach the bundle to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" idos-mcp-server.mcpb --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" idos-mcp-server.mcpb --title "$GITHUB_REF_NAME" --generate-notes
+          fi
+
+      - name: Publish to npm
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if npm view "idos-mcp-server@$version" version > /dev/null 2>&1; then
+            echo "idos-mcp-server@$version is already on npm, skipping."
+          else
+            npm publish
+          fi
+
+      - name: Publish to the MCP registry
+        run: |
+          version=$(node -p "require('./package.json').version")
+          jq --arg v "$version" '.version = $v | .packages[0].version = $v' server.json > server.tmp.json
+          mv server.tmp.json server.json
+          curl -sL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish

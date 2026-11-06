@@ -1,0 +1,46 @@
+{
+    "manifest_version": "0.2",
+    "name": "idos-mcp-server",
+    "display_name": "IDOS",
+    "version": "1.0.0",
+    "description": "Czech train, bus and city transport connections, departure boards and timetables from IDOS.cz. Read-only.",
+    "long_description": "Lets Claude plan journeys on Czech public transport, show departure and arrival boards with platforms and live delays, look up the full route of a train by its number, and read city-line timetables for Prague, Brno and about 90 other cities, all from IDOS.cz. It only reads timetables: it cannot buy tickets, make reservations or access any account.",
+    "author": {
+        "name": "Menal",
+        "url": "https://github.com/Menal226"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Menal226/idos-mcp-server"
+    },
+    "homepage": "https://github.com/Menal226/idos-mcp-server",
+    "support": "https://github.com/Menal226/idos-mcp-server/issues",
+    "license": "Apache-2.0",
+    "keywords": ["idos", "czech", "public-transport", "trains", "timetable"],
+    "server": {
+        "type": "node",
+        "entry_point": "build/index.js",
+        "mcp_config": {
+            "command": "node",
+            "args": ["${__dirname}/build/index.js"]
+        }
+    },
+    "tools": [
+        { "name": "idos_search_locations", "description": "Find stations, stops and towns by name" },
+        { "name": "idos_search_connections", "description": "Plan a journey from A to B" },
+        { "name": "idos_get_connection_detail", "description": "Show every stop of a connection" },
+        { "name": "idos_get_departures", "description": "Show a station's departures or arrivals" },
+        { "name": "idos_get_trip_route", "description": "Show every stop of one trip from a board" },
+        { "name": "idos_get_train_route", "description": "Find a train by number or name and show its route" },
+        { "name": "idos_list_city_timetables", "description": "List cities with city-line timetables" },
+        { "name": "idos_search_lines", "description": "Find a city line and its directions" },
+        { "name": "idos_get_line_route", "description": "List the stops of a city line" },
+        { "name": "idos_get_stop_timetable", "description": "Show a city line's timetable at a stop" }
+    ],
+    "compatibility": {
+        "platforms": ["darwin", "win32", "linux"],
+        "runtimes": {
+            "node": ">=20.3"
+        }
+    }
+}
